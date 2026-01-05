@@ -1,9 +1,29 @@
 import * as FileSystem from 'expo-file-system';
+import * as SecureStore from 'expo-secure-store';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Initialize the Gemini SDK
-const API_KEY = process.env.EXPO_PUBLIC_GEMINI_KEY || '';
-const genAI = new GoogleGenerativeAI(API_KEY);
+// Get API key from secure store or env
+const getApiKey = async (): Promise<string> => {
+    try {
+        const storedKey = await SecureStore.getItemAsync('gemini_api_key');
+        if (storedKey) return storedKey;
+    } catch (error) {
+        console.error('Error retrieving API key from secure store:', error);
+    }
+    return process.env.EXPO_PUBLIC_GEMINI_KEY || '';
+};
+
+// Set API key in secure store
+export const setApiKey = async (key: string): Promise<void> => {
+    try {
+        await SecureStore.setItemAsync('gemini_api_key', key);
+    } catch (error) {
+        console.error('Error storing API key:', error);
+        throw new Error('Failed to save API key');
+    }
+};
+
+// Initialize will be done per request
 
 export interface MemeRequest {
     imageUri?: string;
@@ -32,13 +52,16 @@ class AIService {
     async generateMeme(request: MemeRequest): Promise<MemeResponse> {
         console.log(`[NEURAL LINK] Initializing generation for subject: ${request.prompt}`);
 
+        const API_KEY = await getApiKey();
         if (!API_KEY) {
             return {
                 uri: '',
                 success: false,
-                error: 'CONNECTION ERRROR: Neural API Key missing.'
+                error: 'CONNECTION ERROR: Neural API Key missing. Please set your Gemini API key in Settings.'
             };
         }
+
+        const genAI = new GoogleGenerativeAI(API_KEY);
 
         for (const modelName of this.MODELS) {
             try {

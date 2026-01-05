@@ -68,7 +68,8 @@ export const GenerationScreen = () => {
         if (response.success && response.uri) {
             setResultImage(response.uri);
         } else {
-            Alert.alert('Error', response.error || 'Something went wrong.');
+            const errorMsg = response.error || 'Failed to generate meme. Please check your API key in Settings.';
+            Alert.alert('Generation Failed', errorMsg);
         }
         setIsGenerating(false);
     };
@@ -111,10 +112,10 @@ export const GenerationScreen = () => {
                             />
                         ) : (
                             <View style={styles.placeholderContainer}>
-                                <Sparkles size={48} color={theme.colors.muted} />
+                                <Sparkles size={48} color={theme.colors.text.muted} />
                                 <TextInput
                                     placeholder="NO IMAGE SELECTED"
-                                    placeholderTextColor={theme.colors.muted}
+                                    placeholderTextColor={theme.colors.text.muted}
                                     style={styles.placeholderText}
                                     editable={false}
                                 />
@@ -137,7 +138,7 @@ export const GenerationScreen = () => {
                         <TextInput
                             style={styles.textInput}
                             placeholder="Enter instructions (e.g., 'Make it look 80s', 'Add caption: U WOT M8')"
-                            placeholderTextColor={theme.colors.muted}
+                            placeholderTextColor={theme.colors.text.muted}
                             value={prompt}
                             onChangeText={setPrompt}
                             multiline
@@ -212,7 +213,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     placeholderText: {
-        color: theme.colors.muted,
+        color: theme.colors.text.muted,
         marginTop: theme.spacing.md,
         fontWeight: 'bold',
         letterSpacing: 1,

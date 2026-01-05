@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity } from 'react-native';
-import { User, Shield, Info, LogOut, ChevronRight } from 'lucide-react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { User, Shield, Info, LogOut, ChevronRight, Key } from 'lucide-react-native';
 import { theme } from '../styles/theme';
 import { GradientBackground } from '../components/common/GradientBackground';
 import { NeonCard } from '../components/common/NeonCard';
+import { setApiKey } from '../services/ai';
 
 export const SettingsScreen = () => {
     const [notifications, setNotifications] = useState(true);
     const [biometrics, setBiometrics] = useState(false);
+    const [apiKey, setApiKeyState] = useState('');
 
     return (
         <GradientBackground>
@@ -42,12 +44,40 @@ export const SettingsScreen = () => {
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>SYSTEM</Text>
+                    <NeonCard style={styles.settingRow}>
+                        <View style={styles.rowLead}>
+                            <Key size={20} color={theme.colors.secondary} />
+                            <Text style={styles.settingText}>GEMINI API KEY</Text>
+                        </View>
+                        <TextInput
+                            style={styles.apiKeyInput}
+                            placeholder="Enter API key..."
+                            placeholderTextColor={theme.colors.text.muted}
+                            value={apiKey}
+                            onChangeText={setApiKeyState}
+                            secureTextEntry
+                        />
+                    </NeonCard>
+                    <TouchableOpacity
+                        style={styles.saveButton}
+                        onPress={async () => {
+                            try {
+                                await setApiKey(apiKey);
+                                Alert.alert('Success', 'API key saved securely.');
+                                setApiKeyState('');
+                            } catch (error) {
+                                Alert.alert('Error', 'Failed to save API key.');
+                            }
+                        }}
+                    >
+                        <Text style={styles.saveButtonText}>SAVE API KEY</Text>
+                    </TouchableOpacity>
                     <TouchableOpacity style={styles.navRow}>
                         <View style={styles.rowLead}>
                             <Info size={20} color={theme.colors.primary} />
                             <Text style={styles.settingText}>VERSION 2.5.0-FLASH</Text>
                         </View>
-                        <ChevronRight size={20} color={theme.colors.muted} />
+                        <ChevronRight size={20} color={theme.colors.text.muted} />
                     </TouchableOpacity>
                 </View>
 
@@ -96,14 +126,14 @@ const styles = StyleSheet.create({
         letterSpacing: 2,
     },
     userEmail: {
-        color: theme.colors.muted,
+        color: theme.colors.text.muted,
         fontSize: 12,
     },
     section: {
         marginBottom: theme.spacing.xl,
     },
     sectionTitle: {
-        color: theme.colors.muted,
+        color: theme.colors.text.muted,
         fontSize: 12,
         fontWeight: 'bold',
         letterSpacing: 2,
@@ -132,6 +162,29 @@ const styles = StyleSheet.create({
         marginLeft: theme.spacing.md,
         fontSize: 14,
         letterSpacing: 1,
+    },
+    apiKeyInput: {
+        flex: 1,
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        borderWidth: 1,
+        borderColor: '#333',
+        borderRadius: theme.borderRadius.sm,
+        padding: theme.spacing.sm,
+        color: theme.colors.text.primary,
+        fontSize: 14,
+        marginLeft: theme.spacing.md,
+    },
+    saveButton: {
+        backgroundColor: theme.colors.tertiary,
+        padding: theme.spacing.md,
+        borderRadius: theme.borderRadius.md,
+        alignItems: 'center',
+        marginBottom: theme.spacing.md,
+    },
+    saveButtonText: {
+        color: theme.colors.background,
+        fontWeight: 'bold',
+        letterSpacing: 2,
     },
     logoutButton: {
         flexDirection: 'row',
