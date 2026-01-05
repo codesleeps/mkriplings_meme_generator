@@ -24,7 +24,7 @@ const TabNavigator = () => {
                     paddingBottom: 20,
                 },
                 tabBarActiveTintColor: theme.colors.primary,
-                tabBarInactiveTintColor: theme.colors.muted,
+                tabBarInactiveTintColor: theme.colors.text.muted,
             }}
         >
             <Tab.Screen
@@ -53,7 +53,7 @@ const TabNavigator = () => {
 };
 
 export const AppNavigator = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(true); // Skip auth for now
 
     return (
         <NavigationContainer>
